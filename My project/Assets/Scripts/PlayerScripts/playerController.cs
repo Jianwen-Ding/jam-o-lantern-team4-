@@ -20,6 +20,8 @@ public class playerController : MonoBehaviour
     float midairReversalRatio;
     [SerializeField]
     float jumpForce;
+    [SerializeField]
+    bool hasJumped;
     //Checks whether midair or not
     [SerializeField]
     bool midAir;
@@ -62,12 +64,23 @@ public class playerController : MonoBehaviour
     {
         if (checkBeneath())
         {
+            hasJumped = false;
+            midAir = false;
+        }
+    }
+    private void OnCollisionStay(Collision collision)
+    {
+        if (checkBeneath())
+        {
             midAir = false;
         }
     }
     // Update is called once per frame
     void Update()
     {
+        if (checkBeneath())
+        {
+        }
         cameraHolder.transform.position = gameObject.transform.position;
         transform.rotation = Quaternion.Euler(0, getCam.yAngle, 0);
         float verInput = Input.GetAxisRaw("Verticle");
@@ -138,7 +151,7 @@ public class playerController : MonoBehaviour
             //Walking on ground
             else
             {
-                Vector3 moveVel = new Vector3(groundSpeed * Mathf.Cos(moveDir * Mathf.Deg2Rad), 0, groundSpeed * Mathf.Sin(moveDir * Mathf.Deg2Rad));
+                Vector3 moveVel = new Vector3(groundSpeed * Mathf.Cos(moveDir * Mathf.Deg2Rad), objectPhysics.velocity.y, groundSpeed * Mathf.Sin(moveDir * Mathf.Deg2Rad));
                 objectPhysics.velocity = moveVel;
             }
 
@@ -148,8 +161,9 @@ public class playerController : MonoBehaviour
         //jumping
         if (spaInput != 0)
         {
-            if (!midAir)
+            if (!midAir && !hasJumped)
             {
+                hasJumped = true;
                 midAir = true;
                 objectPhysics.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             }
