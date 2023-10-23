@@ -11,12 +11,9 @@ public class playerCam : MonoBehaviour
     float ySensetivity;
 
     [SerializeField]
-    Transform orientation;
-
+    public float xAngle;
     [SerializeField]
-    float xAngle;
-    [SerializeField]
-    float yAngle;
+    public float yAngle;
     #endregion
     // Start is called before the first frame update
     void Start()
@@ -26,10 +23,28 @@ public class playerCam : MonoBehaviour
         //Makes mouse invisible
         Cursor.visible = false;
     }
-
+    private void OnCollisionEnter(Collision collision)
+    {
+        
+    }
+    private void OnCollisionStay(Collision collision)
+    {
+        
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        
+    }
     // Update is called once per frame
     void Update()
     {
         float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * xSensetivity;
+        float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * ySensetivity;
+
+        yAngle += mouseX;
+        xAngle -= mouseY;
+
+        xAngle = Mathf.Clamp(xAngle, -90f, 90f);
+        transform.rotation = Quaternion.Euler(xAngle, yAngle, 0);
     }
 }
