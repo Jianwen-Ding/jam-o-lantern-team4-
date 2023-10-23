@@ -329,7 +329,7 @@ InputManager:
     m_Name: Verticle
     descriptiveName: 
     descriptiveNegativeName: 
-    negativeButton: d
+    negativeButton: s
     positiveButton: w
     altNegativeButton: down
     altPositiveButton: up

@@ -397,7 +397,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!65 &897874107
 BoxCollider:
@@ -406,7 +406,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 897874105}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: bfd73d33c9f7440d691734d341a087d1, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -440,7 +440,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 2da387d8a965f4d4ca6e97a927994745, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -500,12 +500,13 @@ MonoBehaviour:
   cameraHolder: {fileID: 650112503}
   getCam: {fileID: 0}
   objectPhysics: {fileID: 0}
-  groundSpeed: 4
-  airSpeed: 300
-  jumpForce: 100
+  groundSpeed: 6
+  airSpeed: 100
+  midairReversalRatio: 2
+  jumpForce: 10
   midAir: 0
   distanceHorPerCheck: 0.705
-  distanceVerPerCheck: 3
+  distanceVerPerCheck: 4
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -611,8 +612,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfb10f5f412644255bfb856561c170c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xSensetivity: 400
-  ySensetivity: 400
+  xSensetivity: 800
+  ySensetivity: 800
   xAngle: 0
   yAngle: 0
 --- !u!1 &1004643728
