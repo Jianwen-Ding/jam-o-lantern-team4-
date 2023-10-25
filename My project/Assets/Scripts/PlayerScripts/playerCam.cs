@@ -14,6 +14,11 @@ public class playerCam : MonoBehaviour
     public float xAngle;
     [SerializeField]
     public float yAngle;
+
+    public Vector2 getAngleVec()
+    {
+        return new Vector2(xAngle, yAngle);
+    }
     #endregion
     // Start is called before the first frame update
     void Start()

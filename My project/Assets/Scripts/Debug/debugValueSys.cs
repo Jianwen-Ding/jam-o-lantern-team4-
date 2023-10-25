@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System;
+
 public class debugValueSys : MonoBehaviour
 {
     //Cache
@@ -36,7 +38,7 @@ public class debugValueSys : MonoBehaviour
     public static void display(string address, string text)
     {
         bool addressExists = false;
-        for(int i = 0; i < addressesGiven.Count; i++)
+        for (int i = 0; i < addressesGiven.Count; i++)
         {
             if (addressesGiven[i] == address)
             {
@@ -44,11 +46,22 @@ public class debugValueSys : MonoBehaviour
                 addressExists = true;
             }
         }
-        if(addressExists == false)
+        if (addressExists == false)
         {
             addressesGiven.Add(address);
             textDisplayed.Add(text);
         }
+    }
+    //Turns list to text for gameObjects
+    public static string listToString(List<GameObject> givenList)
+    {
+        string starting = "List [";
+        for(int i = 0; i < givenList.Count; i++)
+        {
+            starting += ", " + givenList[i].name;
+        }
+        starting += " ]";
+        return starting;
     }
 
     // Update is called once per frame

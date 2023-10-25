@@ -22,13 +22,11 @@ public class handMover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float actualHorRot = getAngle.yAngle;
-        float actualVerRot = -getAngle.xAngle;
-        //float actualHorRot = yTest;
-        //float actualVerRot = -xTest;
-        float verDist = distanceFromCenter * Mathf.Sin(actualVerRot * Mathf.Deg2Rad);
-        float horDist = distanceFromCenter * Mathf.Cos(actualVerRot * Mathf.Deg2Rad);
-        gameObject.transform.position = new Vector3(horDist * Mathf.Sin(actualHorRot * Mathf.Deg2Rad) + orbitingObject.gameObject.transform.position.x, verDist + orbitingObject.gameObject.transform.position.y, horDist * Mathf.Cos(actualHorRot * Mathf.Deg2Rad) + orbitingObject.gameObject.transform.position.z);
-        gameObject.transform.rotation = Quaternion.Euler(-actualVerRot, actualHorRot, 0);
+        debugValueSys.display("angle", " angle: " + (int)getAngle.xAngle + "," + (int)getAngle.yAngle);
+        Vector2 check = mathHelper.getAngleBetweenVec(orbitingObject.transform.position, gameObject.transform.position);
+        debugValueSys.display("get angle", " recieved angle: " + (int)check.x + "," + (int)check.y);
+        Vector3 addVec = mathHelper.getVectorFromAngle(distanceFromCenter, getAngle.getAngleVec());
+        gameObject.transform.position = orbitingObject.transform.position + addVec;
+        gameObject.transform.rotation = Quaternion.Euler(getAngle.xAngle , getAngle.yAngle, 0);
     }
 }

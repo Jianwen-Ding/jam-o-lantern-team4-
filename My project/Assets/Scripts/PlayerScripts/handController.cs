@@ -5,6 +5,11 @@ using UnityEngine;
 public class handController : MonoBehaviour
 {
     #region vars
+    [SerializeField]
+    bool isBeingControlledByPlayer;
+    [SerializeField]
+    GameObject player;
+    playerCam getAngle;
     List<GameObject> withinHand = new List<GameObject>();
 
     //Grab Vars
@@ -13,11 +18,16 @@ public class handController : MonoBehaviour
     float grabTimeLeft = 0;
     [SerializeField]
     float letGoStrength;
+    [SerializeField]
+    float reversalSpeedUp;
     bool hasGrabInput = false;
     int grabbedLayer = 7;
     bool hasGrabbed;
     GameObject grabbedObject;
+    Rigidbody grabbedPhysics;
     int originalLayer;
+    [SerializeField]
+    float adjustForce;
 
     //Throw Vars
     [SerializeField]
@@ -29,6 +39,9 @@ public class handController : MonoBehaviour
     float punchTime;
     float punchTimeLeft;
     [SerializeField]
+    float punchCooldownTime;
+    float punchCooldownTimeLeft;
+    [SerializeField]
     float punchStrength;
     bool hasPunchInput = false;
     #endregion
@@ -37,7 +50,7 @@ public class handController : MonoBehaviour
         int returnInt = -1;
         for(int i = 0; i < withinHand.Count; i++)
         {
-            if (checkObject == withinHand[i])
+            if (checkObject == withinHand[i] && checkObject != gameObject)
             {
                 returnInt = i;
                 break;
@@ -49,7 +62,7 @@ public class handController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         int getIndex = isWithinHand(other.gameObject);
-        if(getIndex == -1)
+        if(getIndex == -1 && other.gameObject != player)
         {
             withinHand.Add(other.gameObject);
         }
@@ -57,7 +70,7 @@ public class handController : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         int getIndex = isWithinHand(other.gameObject);
-        if (getIndex == -1)
+        if (getIndex == -1 && other.gameObject != player)
         {
             withinHand.Add(other.gameObject);
         }
@@ -71,16 +84,30 @@ public class handController : MonoBehaviour
         }
     }
 
+    #region grabFuns
+    // Grab 
+    public void grabCommand(Vector2 angle)
+    {
+        if (hasGrabbed)
+        {
+            throwObject(letGoStrength, angle);
+        }
+        else
+        {
+            grabTimeLeft = grabTime;
+        }
+    }
+
     // Grabs that single object
     private void grabObject(GameObject grabbed)
     {
         grabbedObject = grabbed;
+        grabbedPhysics = grabbed.GetComponent<Rigidbody>();
         originalLayer = grabbed.layer;
-        grabbed.GetComponent<Collider>().isTrigger = true;
+        grabbedPhysics.useGravity = false;
         grabbed.layer = grabbedLayer;
         hasGrabbed = true;
     }
-
     // Checks if an object within range can be grabbed
     // Once a grabbable object can be found it grabs it
     private bool attemptGrab()
@@ -95,84 +122,113 @@ public class handController : MonoBehaviour
         }
         return false;
     }
-
-    // Throws a currently grabbed object
-    private void throwObject(float throwStrength)
+    #endregion
+    #region throwFuns
+    public void throwCommand(Vector2 angle)
     {
-        grabTimeLeft = 0;
-        grabbedObject.GetComponent<Collider>().isTrigger = false;
-        grabbedObject.layer = grabbedLayer;
-        hasGrabbed = false;
+        if (hasGrabbed)
+        {
+            throwObject(throwStrength, angle);
+        }
     }
 
-    // Punches in front of the player
-    private void punch()
+    // Throws a currently grabbed object
+    private void throwObject(float throwStrength , Vector2 angle)
     {
         grabTimeLeft = 0;
-        punchTimeLeft = punchTime;
+        grabbedObject.layer = originalLayer;
+        hasGrabbed = false;
+        Vector3 pushDir = mathHelper.getVectorFromAngle(throwStrength, angle);
+        grabbedPhysics.velocity = Vector3.zero;
+        grabbedPhysics.AddForce(pushDir, ForceMode.Impulse);
+        grabbedPhysics.useGravity = true;
+    }
+    #endregion
+    // Punches in front of the player
+    public void punchCommand(Vector2 angle)
+    {
+        if (!hasGrabbed && grabTimeLeft <= 0)
+        {
+            checkPunch(angle);
+        }
+    }
+    private void checkPunch(Vector2 angle)
+    {
+        grabTimeLeft = 0;
+        punchCooldownTimeLeft = punchCooldownTime;
+        for (int i = 0; i < withinHand.Count; i++)
+        {
+            punchObject(withinHand[i], angle);
+        }
+    }
+    private void punchObject(GameObject givenObject,Vector2 angle)
+    {
+        Rigidbody givenPhysics = givenObject.GetComponent<Rigidbody>();
+        if (givenPhysics != null)
+        {
+            Vector3 pushDir = mathHelper.getVectorFromAngle(punchStrength, angle);
+            givenPhysics.AddForce(pushDir, ForceMode.Impulse);
+        }
+    }
+    void Start()
+    {
+        getAngle = Camera.main.GetComponent<playerCam>();
     }
     // Update is called once per frame
     void Update()
     {
-        debugValueSys.display("wow", withinHand.ToString());
-        float grabInput = Input.GetAxisRaw("Grab");
-        float throwInput = Input.GetAxisRaw("Throw");
-        float punchInput = Input.GetAxisRaw("Punch");
+        debugValueSys.display("list", debugValueSys.listToString(withinHand));
 
-        // Grab Input
-        if (grabInput != 0)
+        if (isBeingControlledByPlayer)
         {
-            if (!hasGrabInput)
+            float grabInput = Input.GetAxisRaw("Grab");
+            float throwInput = Input.GetAxisRaw("Throw");
+            float punchInput = Input.GetAxisRaw("Punch");
+
+            // Grab Input
+            if (grabInput != 0)
             {
-                if (hasGrabbed)
+                if (!hasGrabInput)
                 {
-                    throwObject(letGoStrength);
+                    grabCommand(new Vector2(getAngle.xAngle, getAngle.yAngle));
                 }
-                else
-                {
-                    grabTimeLeft = grabTime;
-                }
+                hasGrabInput = true;
             }
-            hasGrabInput = true;
-        }
-        else if (grabInput == 0)
-        {
-            hasGrabInput = false;
-        }
-
-        // Throw Code
-        if(throwInput != 0)
-        {
-            if (!hasThrownInput)
+            else if (grabInput == 0)
             {
-                if (hasGrabbed)
-                {
-                    throwObject(throwStrength);
-                }
+                hasGrabInput = false;
             }
-            hasThrownInput = true;
-        }
-        else if(throwInput == 0)
-        {
-            hasThrownInput = false;
+
+            // Throw Input
+            if (throwInput != 0)
+            {
+                if (!hasThrownInput)
+                {
+                    throwCommand(new Vector2(getAngle.xAngle, getAngle.yAngle));
+                }
+                hasThrownInput = true;
+            }
+            else if (throwInput == 0)
+            {
+                hasThrownInput = false;
+            }
+
+            // Punch Input
+            if (punchInput != 0)
+            {
+                if (!hasPunchInput)
+                {
+                    punchCommand(new Vector2(getAngle.xAngle, getAngle.yAngle));
+                }
+                hasPunchInput = true;
+            }
+            else if (punchInput == 0)
+            {
+                hasPunchInput = false;
+            }
         }
 
-        // Punch Code
-        if(punchInput != 0)
-        {
-            if (!hasPunchInput) {
-                if (!hasGrabbed && grabTimeLeft <= 0)
-                {
-                    punch();
-                }
-            }
-            hasPunchInput = true;
-        }
-        else if(punchInput == 0)
-        {
-            hasPunchInput = false;
-        }
-
+        // Grab lingering hitbox
         if(grabTimeLeft > 0)
         {
             grabTimeLeft -= Time.deltaTime;
@@ -182,15 +238,48 @@ public class handController : MonoBehaviour
             }
         }
 
+        // Punch cooldown
+        if(punchCooldownTimeLeft > 0)
+        {
+            punchCooldownTimeLeft -= Time.deltaTime;
+        }
+
+        // Punch lingering hitbox
         if(punchTimeLeft > 0)
         {
             punchTimeLeft -= Time.deltaTime;
+            checkPunch(new Vector2(getAngle.xAngle, getAngle.yAngle));
         }
 
+        // Grab 
         if (hasGrabbed)
         {
-            grabbedObject.transform.position = gameObject.transform.position;
-            grabbedObject.transform.rotation = gameObject.transform.rotation;
+            // lock movement if close enough
+            if (mathHelper.distance(grabbedObject.transform.position, gameObject.transform.position) > 0.05)
+            {
+                // initial acceleration
+                Vector3 direction = mathHelper.getVectorFromAngle(adjustForce, mathHelper.getAngleBetweenVec(grabbedObject.transform.position, gameObject.transform.position));
+
+                // reversal speedup
+                if ((direction.x > 0) != (grabbedPhysics.velocity.x > 0))
+                {
+                    direction.x *= reversalSpeedUp;
+                }
+                if ((direction.y > 0) != (grabbedPhysics.velocity.y > 0))
+                {
+                    direction.y *= reversalSpeedUp;
+                }
+                if ((direction.z > 0) != (grabbedPhysics.velocity.z > 0))
+                {
+                    direction.z *= reversalSpeedUp;
+                }
+                grabbedPhysics.AddForce(direction, ForceMode.Acceleration);
+            }
+            else
+            {
+                grabbedPhysics.velocity = Vector3.zero;
+            }
+            grabbedPhysics.MoveRotation(gameObject.transform.rotation);
         }
     }
 }

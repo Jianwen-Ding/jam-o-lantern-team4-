@@ -84,9 +84,9 @@ public class playerController : MonoBehaviour
         cameraHolder.transform.position = gameObject.transform.position;
         transform.rotation = Quaternion.Euler(0, getCam.yAngle, 0);
         float verInput = Input.GetAxisRaw("Verticle");
-        debugValueSys.display("verticle", "Verticle axis: " + verInput);
+        // debugValueSys.display("verticle", "Verticle axis: " + verInput);
         float horInput = Input.GetAxisRaw("Horizontal");
-        debugValueSys.display("horizontal", "Horizontal axis: " + horInput);
+        // debugValueSys.display("horizontal", "Horizontal axis: " + horInput);
         //walking and strafing midair
         if (verInput != 0 || horInput != 0)
         {
