@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,19 +12,35 @@ public class stateCapture : MonoBehaviour
         public float frameTime;
         public Vector3 objectPosition;
         public Vector2 angleView;
-        public List<string> givenActions;
+        public bool grabCommand;
+        public bool throwCommand;
+        public bool punchCommand;
         //Constructor
-        public stateFrameCaptured(float fT, Vector3 oP, Vector2 aV, List<string> gA) {
+        public stateFrameCaptured(float fT, Vector3 oP, Vector2 aV, bool gC, bool tC, bool pC) {
             frameTime = fT;
             objectPosition = oP;
             angleView = aV;
-            givenActions = gA;
+            grabCommand = gC;
+            throwCommand = tC;
+            punchCommand = pC;
         }
+
+        //Constructs empty string
+        public stateFrameCaptured()
+        {
+            frameTime = 0;
+            objectPosition = Vector3.zero;
+            angleView = Vector2.zero;
+            grabCommand = false;
+            throwCommand = false;
+            punchCommand = false;
+        }
+
         //returns the chopped frame and subtract the rest, GIVEN TIME NEEDS TO BE LESS THAN FRAME TIME
         public stateFrameCaptured choppedAtTime(float givenTime)
         {
             frameTime -= givenTime;
-            return new stateFrameCaptured(givenTime, objectPosition, angleView, new List<string>());
+            return new stateFrameCaptured(givenTime, objectPosition, angleView, false, false, false);
         }
 
     }
@@ -31,8 +48,35 @@ public class stateCapture : MonoBehaviour
     public class StatePlaythroughCaptured
     {
         List<stateFrameCaptured> inputList;
+
+        //Constructor
+        public StatePlaythroughCaptured()
+        {
+            inputList = new List<stateFrameCaptured>();
+        }
+
+        // Turns a list of frame states into a single one
+        public stateFrameCaptured flattenInputList(List<stateFrameCaptured> stateList)
+        {
+            if(stateList.Count <= 0)
+            {
+                print("-ERROR- List has no ");
+                return new stateFrameCaptured();
+            }
+            else
+            {
+                stateFrameCaptured lastFrame = stateList[stateList.Count - 1];
+                for(int i = 0; i < stateList.Count - 1; i++)
+                {
+                    lastFrame.grabCommand = lastFrame.grabCommand || stateList[i].grabCommand;
+                    lastFrame.throwCommand = lastFrame.throwCommand || stateList[i].throwCommand;
+                    lastFrame.punchCommand = lastFrame.punchCommand || stateList[i].punchCommand;
+                }
+                return lastFrame;
+            }
+        }
         //Gives a list of state frames that happened before the time given and chops them off
-        public List<stateFrameCaptured> chopInputList(float timeGet)
+        public stateFrameCaptured chopInputList(float timeGet)
         {
             float timeLeft = timeGet;
             List<stateFrameCaptured> ranThroughList = new List<stateFrameCaptured>();
@@ -64,27 +108,38 @@ public class stateCapture : MonoBehaviour
                 }
                 
             }
-            return ranThroughList;
+            return flattenInputList(ranThroughList);
         }
 
+        //Adds a state to the inputList
         public void addState(stateFrameCaptured addedState)
         {
             inputList.Add(addedState);
+        }
+
+        public StatePlaythroughCaptured clearStates()
+        {
+            StatePlaythroughCaptured returnOb = this;
+            inputList.Clear();
+            return returnOb;
         }
     }
     #endregion
     #region vars
 
-    StatePlaythroughCaptured stateStore;
+    public StatePlaythroughCaptured stateStore = new StatePlaythroughCaptured();
     //Cache get
     playerCam getAngle;
+    [SerializeField]
+    handController getHand;
     #endregion
 
     private stateFrameCaptured captureState()
     {
         Vector3 currentPos = gameObject.transform.position;
         Vector2 currentAngle = getAngle.getAngleVec();
-        return null;
+        float time = Time.deltaTime;
+        return new stateFrameCaptured(time, currentPos, currentAngle, getHand.hasGrabCommand, getHand.hasThrownCommand, getHand.hasPunchCommand);
     }
     // Start is called before the first frame update
     void Start()

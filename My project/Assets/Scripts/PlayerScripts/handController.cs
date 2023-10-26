@@ -192,11 +192,11 @@ public class handController : MonoBehaviour
 
         if (isBeingControlledByPlayer)
         {
-            bool hasGrabCommand = false;
+            hasGrabCommand = false;
             float grabInput = Input.GetAxisRaw("Grab");
-            bool hasThrownCommand = false;
+            hasThrownCommand = false;
             float throwInput = Input.GetAxisRaw("Throw");
-            bool hasPunchCommand = false;
+            hasPunchCommand = false;
             float punchInput = Input.GetAxisRaw("Punch");
 
             // Grab Input
@@ -205,7 +205,7 @@ public class handController : MonoBehaviour
                 if (!hasGrabInput)
                 {
                     hasGrabCommand = true;
-                    grabCommand(new Vector2(getAngle.xAngle, getAngle.yAngle));
+                    grabCommand(getAngle.getAngleVec());
                 }
                 hasGrabInput = true;
             }
@@ -220,7 +220,7 @@ public class handController : MonoBehaviour
                 if (!hasThrownInput)
                 {
                     hasThrownCommand = true;
-                    throwCommand(new Vector2(getAngle.xAngle, getAngle.yAngle));
+                    throwCommand(getAngle.getAngleVec());
                 }
                 hasThrownInput = true;
             }
@@ -235,7 +235,7 @@ public class handController : MonoBehaviour
                 if (!hasPunchInput)
                 {
                     hasPunchCommand = true;
-                    punchCommand(new Vector2(getAngle.xAngle, getAngle.yAngle));
+                    punchCommand(getAngle.getAngleVec());
                 }
                 hasPunchInput = true;
             }
@@ -265,7 +265,7 @@ public class handController : MonoBehaviour
         if(punchTimeLeft > 0)
         {
             punchTimeLeft -= Time.deltaTime;
-            checkPunch(new Vector2(getAngle.xAngle, getAngle.yAngle));
+            checkPunch(getAngle.getAngleVec());
         }
 
         // Grab 
