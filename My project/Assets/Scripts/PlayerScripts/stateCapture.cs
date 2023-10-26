@@ -5,20 +5,15 @@ using UnityEngine;
 public class stateCapture : MonoBehaviour
 {
     #region classes
-    public class actionsGiven
-    {
-        public float timeIntoState;
-        public string currentState;
-    }
 
     public class stateFrameCaptured
     {
         public float frameTime;
         public Vector3 objectPosition;
         public Vector2 angleView;
-        public List<actionsGiven> givenActions;
+        public List<string> givenActions;
         //Constructor
-        public stateFrameCaptured(float fT, Vector2 oP, Vector2 aV, List<actionsGiven> gA) {
+        public stateFrameCaptured(float fT, Vector3 oP, Vector2 aV, List<string> gA) {
             frameTime = fT;
             objectPosition = oP;
             angleView = aV;
@@ -27,13 +22,8 @@ public class stateCapture : MonoBehaviour
         //returns the chopped frame and subtract the rest, GIVEN TIME NEEDS TO BE LESS THAN FRAME TIME
         public stateFrameCaptured choppedAtTime(float givenTime)
         {
-            List<actionsGiven> modifyAction = givenActions;
-            for(int i = 0; i < modifyAction.Count; i++)
-            {
-                modifyAction[i].timeIntoState = modifyAction[i].timeIntoState - frameTime + givenTime;
-            }
             frameTime -= givenTime;
-            return new stateFrameCaptured(givenTime, objectPosition, angleView, modifyAction);
+            return new stateFrameCaptured(givenTime, objectPosition, angleView, new List<string>());
         }
 
     }
@@ -86,16 +76,20 @@ public class stateCapture : MonoBehaviour
     #region vars
 
     StatePlaythroughCaptured stateStore;
+    //Cache get
+    playerCam getAngle;
     #endregion
 
     private stateFrameCaptured captureState()
     {
+        Vector3 currentPos = gameObject.transform.position;
+        Vector2 currentAngle = getAngle.getAngleVec();
         return null;
     }
     // Start is called before the first frame update
     void Start()
     {
-        
+        getAngle = Camera.main.GetComponent<playerCam>();
     }
 
     // Update is called once per frame

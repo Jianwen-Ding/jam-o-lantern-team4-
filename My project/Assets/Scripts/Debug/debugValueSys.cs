@@ -60,7 +60,7 @@ public class debugValueSys : MonoBehaviour
         {
             starting += ", " + givenList[i].name;
         }
-        starting += " ]";
+        starting += "]";
         return starting;
     }
 

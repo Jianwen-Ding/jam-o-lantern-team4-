@@ -5,12 +5,19 @@ using UnityEngine;
 public class handController : MonoBehaviour
 {
     #region vars
+    playerCam getAngle;
+    List<GameObject> withinHand = new List<GameObject>();
+
+    //Player controllers
+    public bool hasGrabCommand = false;
+    public bool hasThrownCommand = false;
+    public bool hasPunchCommand = false;
     [SerializeField]
     bool isBeingControlledByPlayer;
     [SerializeField]
     GameObject player;
-    playerCam getAngle;
-    List<GameObject> withinHand = new List<GameObject>();
+    [SerializeField]
+    stateCapture stateCapturer;
 
     //Grab Vars
     [SerializeField]
@@ -28,6 +35,10 @@ public class handController : MonoBehaviour
     int originalLayer;
     [SerializeField]
     float adjustForce;
+    [SerializeField]
+    float distanceUntilBreak;
+    [SerializeField]
+    float distanceToAdjustRatio;
 
     //Throw Vars
     [SerializeField]
@@ -181,8 +192,11 @@ public class handController : MonoBehaviour
 
         if (isBeingControlledByPlayer)
         {
+            bool hasGrabCommand = false;
             float grabInput = Input.GetAxisRaw("Grab");
+            bool hasThrownCommand = false;
             float throwInput = Input.GetAxisRaw("Throw");
+            bool hasPunchCommand = false;
             float punchInput = Input.GetAxisRaw("Punch");
 
             // Grab Input
@@ -190,6 +204,7 @@ public class handController : MonoBehaviour
             {
                 if (!hasGrabInput)
                 {
+                    hasGrabCommand = true;
                     grabCommand(new Vector2(getAngle.xAngle, getAngle.yAngle));
                 }
                 hasGrabInput = true;
@@ -204,6 +219,7 @@ public class handController : MonoBehaviour
             {
                 if (!hasThrownInput)
                 {
+                    hasThrownCommand = true;
                     throwCommand(new Vector2(getAngle.xAngle, getAngle.yAngle));
                 }
                 hasThrownInput = true;
@@ -218,6 +234,7 @@ public class handController : MonoBehaviour
             {
                 if (!hasPunchInput)
                 {
+                    hasPunchCommand = true;
                     punchCommand(new Vector2(getAngle.xAngle, getAngle.yAngle));
                 }
                 hasPunchInput = true;
@@ -255,31 +272,39 @@ public class handController : MonoBehaviour
         if (hasGrabbed)
         {
             // lock movement if close enough
-            if (mathHelper.distance(grabbedObject.transform.position, gameObject.transform.position) > 0.05)
+            float distance = mathHelper.distance(grabbedObject.transform.position, gameObject.transform.position);
+            if (distance > 0.2)
             {
                 // initial acceleration
-                Vector3 direction = mathHelper.getVectorFromAngle(adjustForce, mathHelper.getAngleBetweenVec(grabbedObject.transform.position, gameObject.transform.position));
+                Vector3 direction = mathHelper.getVectorFromAngle(adjustForce * Mathf.Pow(distance, distanceToAdjustRatio), mathHelper.getAngleBetweenVec(grabbedObject.transform.position, gameObject.transform.position));
 
                 // reversal speedup
                 if ((direction.x > 0) != (grabbedPhysics.velocity.x > 0))
                 {
                     direction.x *= reversalSpeedUp;
+                    //grabbedPhysics.velocity = new Vector3(0, grabbedPhysics.velocity.y, grabbedPhysics.velocity.z);
                 }
                 if ((direction.y > 0) != (grabbedPhysics.velocity.y > 0))
                 {
                     direction.y *= reversalSpeedUp;
+                    //grabbedPhysics.velocity = new Vector3(grabbedPhysics.velocity.x, 0, grabbedPhysics.velocity.z);
                 }
                 if ((direction.z > 0) != (grabbedPhysics.velocity.z > 0))
                 {
                     direction.z *= reversalSpeedUp;
+                    //grabbedPhysics.velocity = new Vector3(grabbedPhysics.velocity.x, grabbedPhysics.velocity.y, grabbedPhysics.velocity.z);
                 }
                 grabbedPhysics.AddForce(direction, ForceMode.Acceleration);
+                if (distance > distanceUntilBreak)
+                {
+                    throwObject(0, Vector2.zero);
+                }
             }
             else
             {
-                grabbedPhysics.velocity = Vector3.zero;
-            }
-            grabbedPhysics.MoveRotation(gameObject.transform.rotation);
+                grabbedPhysics.velocity = grabbedPhysics.velocity / 2;
+                grabbedPhysics.MovePosition(gameObject.transform.position);
+            }  
         }
     }
 }
