@@ -11,6 +11,14 @@ public class playerController : MonoBehaviour
     playerCam getCam;
     [SerializeField]
     Rigidbody objectPhysics;
+    [SerializeField]
+    stateCapture stateRecorder;
+    //Rewind
+    [SerializeField]
+    bool hasTouchedPoint = false;
+    rewindPoint checkPoint;
+    bool hasRewinded;
+    bool hasCloned;
     //Movement
     [SerializeField]
     float groundSpeed;
@@ -34,8 +42,25 @@ public class playerController : MonoBehaviour
     {
         getCam = Camera.main.GetComponent<playerCam>();
         objectPhysics = gameObject.GetComponent<Rigidbody>();
+        stateRecorder = gameObject.GetComponent<stateCapture>();
     }
 
+    // disconnects with last point and connects to a new rewind point
+    public void reachPoint(rewindPoint reachedPoint)
+    {
+        if (!hasTouchedPoint)
+        {
+            checkPoint = reachedPoint;
+            hasTouchedPoint = true;
+        }
+        else
+        {
+            checkPoint.disconnect();
+            checkPoint = reachedPoint;
+        }
+    }
+
+    // sends raycasts below the character to check if there is a collider below
     private bool checkBeneath()
     {
         int layerMask = ~(1 << 6);
@@ -56,6 +81,8 @@ public class playerController : MonoBehaviour
         bool rightBackCheck = checkAtAngle(-135f);
         return (centerCheck || leftTopCheck || rightTopCheck || leftBackCheck || rightBackCheck);
     }
+
+    // checks whether the player is midair or not for jumping and midair movement
     private void OnCollisionExit(Collision collision)
     {
         midAir = true;
@@ -75,12 +102,10 @@ public class playerController : MonoBehaviour
             midAir = false;
         }
     }
+
     // Update is called once per frame
     void Update()
     {
-        if (checkBeneath())
-        {
-        }
         cameraHolder.transform.position = gameObject.transform.position;
         transform.rotation = Quaternion.Euler(0, getCam.yAngle, 0);
         float verInput = Input.GetAxisRaw("Verticle");
@@ -166,6 +191,40 @@ public class playerController : MonoBehaviour
                 hasJumped = true;
                 midAir = true;
                 objectPhysics.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            }
+        }
+
+        // rewinding
+        if (hasTouchedPoint)
+        {
+            float rewindInput = Input.GetAxisRaw("Redo");
+            float cloneInput = Input.GetAxisRaw("Clone");
+            if(rewindInput != 0)
+            {
+                if (!hasRewinded)
+                {
+                    gameObject.transform.position = checkPoint.gameObject.transform.position;
+                    checkPoint.resetClones();
+                    stateRecorder.stateStore.clearStates();
+                }
+                hasRewinded = true;
+            }
+            else
+            {
+                hasRewinded = false;
+            }
+            if(cloneInput != 0)
+            {
+                if (!hasCloned)
+                {
+                    gameObject.transform.position = checkPoint.gameObject.transform.position;
+                    checkPoint.clonePlayer(stateRecorder.stateStore.clearStates());
+                }
+                hasCloned = true;
+            }
+            else
+            {
+                hasCloned = false;
             }
         }
     }

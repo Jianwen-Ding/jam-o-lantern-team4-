@@ -125,7 +125,7 @@ public class handController : MonoBehaviour
     {
         for(int i = 0; i < withinHand.Count; i++)
         {
-            if (withinHand[i].tag == "GrabObject")
+            if (withinHand[i].tag == "GrabObject" && withinHand[i].layer != 7)
             {
                 grabObject(withinHand[i]);
                 return true;

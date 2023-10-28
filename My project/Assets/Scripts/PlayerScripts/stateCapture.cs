@@ -47,15 +47,26 @@ public class stateCapture : MonoBehaviour
 
     public class StatePlaythroughCaptured
     {
-        List<stateFrameCaptured> inputList;
+        List<stateFrameCaptured> stateList;
 
-        //Constructor
+        // constructors
         public StatePlaythroughCaptured()
         {
-            inputList = new List<stateFrameCaptured>();
+            stateList = new List<stateFrameCaptured>();
         }
 
-        // Turns a list of frame states into a single one
+        public StatePlaythroughCaptured(List<stateFrameCaptured> givenList)
+        {
+            print(givenList.Count);
+            stateList = new List<stateFrameCaptured>(givenList) ;
+        }
+
+        public StatePlaythroughCaptured(StatePlaythroughCaptured givenCopy)
+        {
+            print(givenCopy.stateList.Count);
+            stateList = new List<stateFrameCaptured>(givenCopy.stateList);
+        }
+        // turns a list of frame states into a single one
         public stateFrameCaptured flattenInputList(List<stateFrameCaptured> stateList)
         {
             if(stateList.Count <= 0)
@@ -82,10 +93,10 @@ public class stateCapture : MonoBehaviour
             List<stateFrameCaptured> ranThroughList = new List<stateFrameCaptured>();
             while (timeLeft > 0){
                 //Has not exausted entire captured playthrough
-                if(inputList.Count != 0)
+                if(stateList.Count != 0)
                 {
-                    stateFrameCaptured currentFrame = inputList.ToArray()[0];
-                    float timeGiven = inputList[0].frameTime;
+                    stateFrameCaptured currentFrame = stateList.ToArray()[0];
+                    float timeGiven = stateList[0].frameTime;
                     //Found frame that happens at time
                     if (timeLeft < timeGiven)
                     {
@@ -96,9 +107,9 @@ public class stateCapture : MonoBehaviour
                     //Frame took too long and moving onto next frame
                     else
                     {
-                        ranThroughList.Add(inputList.ToArray()[0]);
+                        ranThroughList.Add(stateList.ToArray()[0]);
                         timeLeft = timeLeft - timeGiven;
-                        inputList.RemoveAt(0);
+                        stateList.RemoveAt(0);
                     }
                 }
                 //Has exausted entire captured playthrough and returns nothing
@@ -111,17 +122,30 @@ public class stateCapture : MonoBehaviour
             return flattenInputList(ranThroughList);
         }
 
-        //Adds a state to the inputList
+        // adds a state to the inputList
         public void addState(stateFrameCaptured addedState)
         {
-            inputList.Add(addedState);
+            debugValueSys.display("list size","listSize: " + stateList.Count);
+            stateList.Add(addedState);
         }
 
+        // clears the states and returns them
         public StatePlaythroughCaptured clearStates()
         {
-            StatePlaythroughCaptured returnOb = this;
-            inputList.Clear();
+            StatePlaythroughCaptured returnOb = new StatePlaythroughCaptured(this);
+            stateList.Clear();
             return returnOb;
+        }
+
+        // gives count of states
+        public int countStates()
+        {
+            return stateList.Count;
+        }
+        // returns true if the list has nothing in it
+        public bool isEmpty()
+        {
+            return stateList.Equals(new List<stateCapture>());
         }
     }
     #endregion
