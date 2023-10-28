@@ -283,10 +283,11 @@ MonoBehaviour:
   getCam: {fileID: 0}
   objectPhysics: {fileID: 0}
   stateRecorder: {fileID: 0}
+  hasTouchedPoint: 0
   groundSpeed: 6
   airSpeed: 100
   midairReversalRatio: 3
-  jumpForce: 10
+  jumpVel: 7.5
   hasJumped: 0
   midAir: 0
   distanceHorPerCheck: 0.705

@@ -7,7 +7,7 @@ public class stateCapture : MonoBehaviour
 {
     #region classes
 
-    public class stateFrameCaptured
+    public class StateFrameCaptured
     {
         public float frameTime;
         public Vector3 objectPosition;
@@ -15,8 +15,8 @@ public class stateCapture : MonoBehaviour
         public bool grabCommand;
         public bool throwCommand;
         public bool punchCommand;
-        //Constructor
-        public stateFrameCaptured(float fT, Vector3 oP, Vector2 aV, bool gC, bool tC, bool pC) {
+        // constructor
+        public StateFrameCaptured(float fT, Vector3 oP, Vector2 aV, bool gC, bool tC, bool pC) {
             frameTime = fT;
             objectPosition = oP;
             angleView = aV;
@@ -25,8 +25,12 @@ public class stateCapture : MonoBehaviour
             punchCommand = pC;
         }
 
-        //Constructs empty string
-        public stateFrameCaptured()
+        public StateFrameCaptured duplicate()
+        {
+            return new StateFrameCaptured(frameTime, objectPosition, angleView, grabCommand, throwCommand, punchCommand);
+        }
+        // constructs empty string
+        public StateFrameCaptured()
         {
             frameTime = 0;
             objectPosition = Vector3.zero;
@@ -37,46 +41,48 @@ public class stateCapture : MonoBehaviour
         }
 
         //returns the chopped frame and subtract the rest, GIVEN TIME NEEDS TO BE LESS THAN FRAME TIME
-        public stateFrameCaptured choppedAtTime(float givenTime)
+        public StateFrameCaptured choppedAtTime(float givenTime)
         {
             frameTime -= givenTime;
-            return new stateFrameCaptured(givenTime, objectPosition, angleView, false, false, false);
+            return new StateFrameCaptured(givenTime, objectPosition, angleView, false, false, false);
         }
 
     }
 
     public class StatePlaythroughCaptured
     {
-        List<stateFrameCaptured> stateList;
+        List<StateFrameCaptured> stateList = new List<StateFrameCaptured>();
 
         // constructors
         public StatePlaythroughCaptured()
         {
-            stateList = new List<stateFrameCaptured>();
-        }
-
-        public StatePlaythroughCaptured(List<stateFrameCaptured> givenList)
-        {
-            print(givenList.Count);
-            stateList = new List<stateFrameCaptured>(givenList) ;
+            stateList = new List<StateFrameCaptured>();
         }
 
         public StatePlaythroughCaptured(StatePlaythroughCaptured givenCopy)
         {
-            print(givenCopy.stateList.Count);
-            stateList = new List<stateFrameCaptured>(givenCopy.stateList);
+            List<StateFrameCaptured> returnList = new List<StateFrameCaptured>();
+            for (int i = 0; i < givenCopy.stateList.Count; i++) {
+                returnList.Add(givenCopy.stateList[i].duplicate());
+            }
+            stateList = returnList;
+        }
+
+        public StatePlaythroughCaptured dulplicate()
+        {
+            return new StatePlaythroughCaptured(this);
         }
         // turns a list of frame states into a single one
-        public stateFrameCaptured flattenInputList(List<stateFrameCaptured> stateList)
+        public StateFrameCaptured flattenInputList(List<StateFrameCaptured> stateList)
         {
             if(stateList.Count <= 0)
             {
                 print("-ERROR- List has no ");
-                return new stateFrameCaptured();
+                return new StateFrameCaptured();
             }
             else
             {
-                stateFrameCaptured lastFrame = stateList[stateList.Count - 1];
+                StateFrameCaptured lastFrame = stateList[stateList.Count - 1];
                 for(int i = 0; i < stateList.Count - 1; i++)
                 {
                     lastFrame.grabCommand = lastFrame.grabCommand || stateList[i].grabCommand;
@@ -87,15 +93,15 @@ public class stateCapture : MonoBehaviour
             }
         }
         //Gives a list of state frames that happened before the time given and chops them off
-        public stateFrameCaptured chopInputList(float timeGet)
+        public StateFrameCaptured chopInputList(float timeGet)
         {
             float timeLeft = timeGet;
-            List<stateFrameCaptured> ranThroughList = new List<stateFrameCaptured>();
+            List<StateFrameCaptured> ranThroughList = new List<StateFrameCaptured>();
             while (timeLeft > 0){
                 //Has not exausted entire captured playthrough
                 if(stateList.Count != 0)
                 {
-                    stateFrameCaptured currentFrame = stateList.ToArray()[0];
+                    StateFrameCaptured currentFrame = stateList.ToArray()[0];
                     float timeGiven = stateList[0].frameTime;
                     //Found frame that happens at time
                     if (timeLeft < timeGiven)
@@ -123,7 +129,7 @@ public class stateCapture : MonoBehaviour
         }
 
         // adds a state to the inputList
-        public void addState(stateFrameCaptured addedState)
+        public void addState(StateFrameCaptured addedState)
         {
             debugValueSys.display("list size","listSize: " + stateList.Count);
             stateList.Add(addedState);
@@ -132,7 +138,7 @@ public class stateCapture : MonoBehaviour
         // clears the states and returns them
         public StatePlaythroughCaptured clearStates()
         {
-            StatePlaythroughCaptured returnOb = new StatePlaythroughCaptured(this);
+            StatePlaythroughCaptured returnOb = dulplicate();
             stateList.Clear();
             return returnOb;
         }
@@ -142,10 +148,21 @@ public class stateCapture : MonoBehaviour
         {
             return stateList.Count;
         }
+
+        // gives count of state time -- for debug use
+        public float statesTime()
+        {
+            float timeCount = 0;
+            for(int i = 0; i < stateList.Count; i++)
+            {
+                timeCount += stateList[i].frameTime;
+            }
+            return timeCount;
+        }
         // returns true if the list has nothing in it
         public bool isEmpty()
         {
-            return stateList.Equals(new List<stateCapture>());
+            return stateList.Count == 0;
         }
     }
     #endregion
@@ -158,12 +175,12 @@ public class stateCapture : MonoBehaviour
     handController getHand;
     #endregion
 
-    private stateFrameCaptured captureState()
+    private StateFrameCaptured captureState()
     {
         Vector3 currentPos = gameObject.transform.position;
         Vector2 currentAngle = getAngle.getAngleVec();
         float time = Time.deltaTime;
-        return new stateFrameCaptured(time, currentPos, currentAngle, getHand.hasGrabCommand, getHand.hasThrownCommand, getHand.hasPunchCommand);
+        return new StateFrameCaptured(time, currentPos, currentAngle, getHand.hasGrabCommand, getHand.hasThrownCommand, getHand.hasPunchCommand);
     }
     // Start is called before the first frame update
     void Start()

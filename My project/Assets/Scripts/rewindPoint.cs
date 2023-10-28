@@ -25,9 +25,8 @@ public class rewindPoint : MonoBehaviour
             GameObject newClone = Instantiate(clonePrefab, gameObject.transform.position, gameObject.transform.rotation);
             GameObject baseClone = newClone.transform.GetChild(0).gameObject;
             inputFeeder baseFeeder = baseClone.GetComponent<inputFeeder>();
-            print("wow: "+capturedStates.countStates());
-            baseFeeder.stateRecording = new StatePlaythroughCaptured(capturedStates);
-            StatePlaythroughCaptured seperateStateRecord = new StatePlaythroughCaptured(capturedStates);
+            baseFeeder.stateRecording = capturedStates.dulplicate();
+            StatePlaythroughCaptured seperateStateRecord = capturedStates.dulplicate();
             storedStates.Add(seperateStateRecord);
             clones.Add(baseFeeder);
             // resets all clones to original position
@@ -45,7 +44,8 @@ public class rewindPoint : MonoBehaviour
     {
         for(int i = 0; i < clones.Count; i++)
         {
-            clones[i].stateRecording = storedStates[i];
+            debugValueSys.display(i + "","Clone " + i + " time: " + storedStates[i].statesTime());
+            clones[i].stateRecording = storedStates[i].dulplicate();
         }
     }
 
@@ -79,9 +79,5 @@ public class rewindPoint : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        for (int i = 0; i < clones.Count; i++)
-        {
-            debugValueSys.display("" + i, clones[i].stateRecording.countStates() + "");
-        }
     }
 }

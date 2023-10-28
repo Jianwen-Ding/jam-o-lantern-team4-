@@ -25,7 +25,7 @@ public class inputFeeder : MonoBehaviour
     {
         if (!stateRecording.isEmpty())
         {
-            stateCapture.stateFrameCaptured framesCaptured = stateRecording.chopInputList(Time.deltaTime);
+            stateCapture.StateFrameCaptured framesCaptured = stateRecording.chopInputList(Time.deltaTime);
             gameObject.transform.position = framesCaptured.objectPosition;
             gameObject.transform.rotation = Quaternion.Euler(0, framesCaptured.angleView.y, 0);
             mover.givenAngle = framesCaptured.angleView;

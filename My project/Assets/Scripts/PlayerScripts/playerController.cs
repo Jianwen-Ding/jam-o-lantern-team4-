@@ -27,7 +27,7 @@ public class playerController : MonoBehaviour
     [SerializeField]
     float midairReversalRatio;
     [SerializeField]
-    float jumpForce;
+    float jumpVel;
     [SerializeField]
     bool hasJumped;
     //Checks whether midair or not
@@ -99,6 +99,7 @@ public class playerController : MonoBehaviour
     {
         if (checkBeneath())
         {
+            hasJumped = false;
             midAir = false;
         }
     }
@@ -190,7 +191,7 @@ public class playerController : MonoBehaviour
             {
                 hasJumped = true;
                 midAir = true;
-                objectPhysics.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                objectPhysics.velocity = new Vector3(objectPhysics.velocity.x, jumpVel, objectPhysics.velocity.z);
             }
         }
 
