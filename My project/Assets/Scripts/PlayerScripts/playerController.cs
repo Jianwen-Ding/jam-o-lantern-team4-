@@ -19,6 +19,7 @@ public class playerController : MonoBehaviour
     rewindPoint checkPoint;
     bool hasRewinded;
     bool hasCloned;
+    bool hasCancel;
     //Movement
     [SerializeField]
     float groundSpeed;
@@ -50,6 +51,7 @@ public class playerController : MonoBehaviour
     {
         if (!hasTouchedPoint)
         {
+            stateRecorder.start();
             checkPoint = reachedPoint;
             hasTouchedPoint = true;
         }
@@ -104,6 +106,11 @@ public class playerController : MonoBehaviour
         }
     }
 
+    //get/set functions
+    public bool getTouchedPoint()
+    {
+        return hasTouchedPoint;
+    }
     // Update is called once per frame
     void Update()
     {
@@ -200,12 +207,14 @@ public class playerController : MonoBehaviour
         {
             float rewindInput = Input.GetAxisRaw("Redo");
             float cloneInput = Input.GetAxisRaw("Clone");
-            if(rewindInput != 0)
+            float cancelInput = Input.GetAxisRaw("Cancel");
+            if (rewindInput != 0)
             {
                 if (!hasRewinded)
                 {
                     gameObject.transform.position = checkPoint.gameObject.transform.position;
-                    checkPoint.resetClones();
+                    objectPhysics.velocity = Vector3.zero;
+                    checkPoint.rewind();
                     stateRecorder.stateStore.clearStates();
                 }
                 hasRewinded = true;
@@ -219,6 +228,7 @@ public class playerController : MonoBehaviour
                 if (!hasCloned)
                 {
                     gameObject.transform.position = checkPoint.gameObject.transform.position;
+                    objectPhysics.velocity = Vector3.zero;
                     checkPoint.clonePlayer(stateRecorder.stateStore.clearStates());
                 }
                 hasCloned = true;
@@ -226,6 +236,21 @@ public class playerController : MonoBehaviour
             else
             {
                 hasCloned = false;
+            }
+            if(cancelInput != 0)
+            {
+                if (!hasCancel)
+                {
+                    gameObject.transform.position = checkPoint.gameObject.transform.position;
+                    objectPhysics.velocity = Vector3.zero;
+                    checkPoint.destroyLastClone();
+                    stateRecorder.stateStore.clearStates();
+                }
+                hasCancel = true;
+            }
+            else
+            {
+                hasCancel = false;
             }
         }
     }

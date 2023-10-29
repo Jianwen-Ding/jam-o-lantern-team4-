@@ -173,8 +173,10 @@ public class stateCapture : MonoBehaviour
     playerCam getAngle;
     [SerializeField]
     handController getHand;
+    bool started;
     #endregion
 
+    // inputs current commands, angle, and position into a returned StateFrameCaptured
     private StateFrameCaptured captureState()
     {
         Vector3 currentPos = gameObject.transform.position;
@@ -188,9 +190,17 @@ public class stateCapture : MonoBehaviour
         getAngle = Camera.main.GetComponent<playerCam>();
     }
 
+    public void start()
+    {
+        started = true;
+    }
+
     // Update is called once per frame
     void Update()
     {
-        stateStore.addState(captureState());
+        if (started)
+        {
+            stateStore.addState(captureState());
+        }
     }
 }

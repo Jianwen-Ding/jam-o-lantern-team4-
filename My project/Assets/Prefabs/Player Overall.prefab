@@ -92,7 +92,7 @@ MonoBehaviour:
   grabTime: 3
   letGoStrength: 1
   reversalSpeedUp: 8
-  adjustForce: 15
+  adjustForce: 5400
   distanceUntilBreak: 5
   distanceToAdjustRatio: 1.5
   throwStrength: 10

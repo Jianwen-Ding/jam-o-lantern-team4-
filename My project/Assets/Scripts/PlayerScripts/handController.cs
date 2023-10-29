@@ -294,7 +294,7 @@ public class handController : MonoBehaviour
                     direction.z *= reversalSpeedUp;
                     //grabbedPhysics.velocity = new Vector3(grabbedPhysics.velocity.x, grabbedPhysics.velocity.y, grabbedPhysics.velocity.z);
                 }
-                grabbedPhysics.AddForce(direction, ForceMode.Acceleration);
+                grabbedPhysics.AddForce(direction * Time.deltaTime, ForceMode.Acceleration);
                 if (distance > distanceUntilBreak)
                 {
                     throwObject(0, Vector2.zero);
