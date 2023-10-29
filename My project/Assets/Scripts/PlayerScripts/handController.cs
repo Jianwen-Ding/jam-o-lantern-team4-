@@ -143,6 +143,14 @@ public class handController : MonoBehaviour
         }
     }
 
+    public void releaseCommand()
+    {
+        if (hasGrabbed)
+        {
+            throwObject(0, Vector2.zero);
+        }
+    }
+
     // Throws a currently grabbed object
     private void throwObject(float throwStrength , Vector2 angle)
     {
@@ -175,10 +183,15 @@ public class handController : MonoBehaviour
     private void punchObject(GameObject givenObject,Vector2 angle)
     {
         Rigidbody givenPhysics = givenObject.GetComponent<Rigidbody>();
+        pushButton givenButton = givenObject.GetComponent<pushButton>();
         if (givenPhysics != null)
         {
             Vector3 pushDir = mathHelper.getVectorFromAngle(punchStrength, angle);
             givenPhysics.AddForce(pushDir, ForceMode.Impulse);
+        }
+        if(givenButton != null)
+        {
+            givenButton.pressButton();
         }
     }
     void Start()

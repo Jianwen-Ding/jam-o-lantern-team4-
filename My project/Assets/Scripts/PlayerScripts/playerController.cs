@@ -13,6 +13,8 @@ public class playerController : MonoBehaviour
     Rigidbody objectPhysics;
     [SerializeField]
     stateCapture stateRecorder;
+    [SerializeField]
+    handController handScript;
     //Rewind
     [SerializeField]
     bool hasTouchedPoint = false;
@@ -62,6 +64,14 @@ public class playerController : MonoBehaviour
         }
     }
 
+    // rewinds self
+    private void rewindPlayer()
+    {
+        handScript.releaseCommand();
+        gameObject.transform.position = checkPoint.gameObject.transform.position;
+        objectPhysics.velocity = Vector3.zero;
+        stateRecorder.stateStore.clearStates();
+    }
     // sends raycasts below the character to check if there is a collider below
     private bool checkBeneath()
     {
@@ -106,11 +116,19 @@ public class playerController : MonoBehaviour
         }
     }
 
-    //get/set functions
+    // get/set functions
     public bool getTouchedPoint()
     {
         return hasTouchedPoint;
     }
+
+    // upon the player getting damaged, rewinds game to last checkpoint
+    public void death()
+    {
+        checkPoint.rewind();
+        rewindPlayer();
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -212,10 +230,8 @@ public class playerController : MonoBehaviour
             {
                 if (!hasRewinded)
                 {
-                    gameObject.transform.position = checkPoint.gameObject.transform.position;
-                    objectPhysics.velocity = Vector3.zero;
                     checkPoint.rewind();
-                    stateRecorder.stateStore.clearStates();
+                    rewindPlayer();
                 }
                 hasRewinded = true;
             }
@@ -227,9 +243,8 @@ public class playerController : MonoBehaviour
             {
                 if (!hasCloned)
                 {
-                    gameObject.transform.position = checkPoint.gameObject.transform.position;
-                    objectPhysics.velocity = Vector3.zero;
                     checkPoint.clonePlayer(stateRecorder.stateStore.clearStates());
+                    rewindPlayer();
                 }
                 hasCloned = true;
             }
@@ -241,10 +256,8 @@ public class playerController : MonoBehaviour
             {
                 if (!hasCancel)
                 {
-                    gameObject.transform.position = checkPoint.gameObject.transform.position;
-                    objectPhysics.velocity = Vector3.zero;
                     checkPoint.destroyLastClone();
-                    stateRecorder.stateStore.clearStates();
+                    rewindPlayer();
                 }
                 hasCancel = true;
             }

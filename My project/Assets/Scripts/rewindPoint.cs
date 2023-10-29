@@ -26,6 +26,8 @@ public class rewindPoint : MonoBehaviour
     public delegate void rewindAction();
     public static event rewindAction rewindCommand;
 
+    public delegate void setAction();
+    public static event setAction setCommand;
 
     //These two variables need to have the exact same count
     List<StatePlaythroughCaptured> storedStates = new List<StatePlaythroughCaptured>();
@@ -93,6 +95,19 @@ public class rewindPoint : MonoBehaviour
         inActivation = false;
     }
 
+    private void connect()
+    {
+        player.transform.position = gameObject.transform.position;
+        playerPhysics.velocity = Vector3.zero;
+        isActivated = true;
+        playerActivated = player.GetComponent<playerController>();
+        playerActivated.reachPoint(this);
+        if(setCommand != null)
+        {
+            setCommand();
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if(other.tag == "Player"&& !isActivated)
@@ -101,11 +116,6 @@ public class rewindPoint : MonoBehaviour
             playerPhysics = player.GetComponent<Rigidbody>();
             inActivation = true;
         }
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
     }
 
     // Update is called once per frame
@@ -133,11 +143,7 @@ public class rewindPoint : MonoBehaviour
             playerPhysics.AddForce(direction * Time.deltaTime, ForceMode.Acceleration);
             if (mathHelper.distance(player.transform.position, gameObject.transform.position) < 0.05)
             {
-                player.transform.position = gameObject.transform.position;
-                playerPhysics.velocity = Vector3.zero;
-                isActivated = true;
-                playerActivated = player.GetComponent<playerController>();
-                playerActivated.reachPoint(this);
+                connect();
             }
         }
     }

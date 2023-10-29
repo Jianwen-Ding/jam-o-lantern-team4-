@@ -6,6 +6,7 @@ TagManager:
   tags:
   - GrabObject
   - Clone
+  - Button
   layers:
   - Default
   - TransparentFX

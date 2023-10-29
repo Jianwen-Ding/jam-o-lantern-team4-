@@ -283,6 +283,7 @@ MonoBehaviour:
   getCam: {fileID: 0}
   objectPhysics: {fileID: 0}
   stateRecorder: {fileID: 0}
+  handScript: {fileID: 2471336570923888225}
   hasTouchedPoint: 0
   groundSpeed: 6
   airSpeed: 100
