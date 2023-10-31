@@ -65,6 +65,7 @@ public class playerController : MonoBehaviour
         {
             checkPoint.disconnect();
             checkPoint = reachedPoint;
+            stateRecorder.stateStore.clearStates();
         }
     }
 
