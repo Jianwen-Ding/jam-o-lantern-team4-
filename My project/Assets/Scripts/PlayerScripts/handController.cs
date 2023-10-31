@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class handController : MonoBehaviour
+public class handController : rewindBase
 {
     #region vars
     playerCam getAngle;
@@ -55,6 +55,13 @@ public class handController : MonoBehaviour
     [SerializeField]
     float punchStrength;
     bool hasPunchInput = false;
+
+    //Rewind vatrs
+    float grabTimeLeftSet;
+    float punchTimeLeftSet;
+    float punchCooldownTimeLeftSet;
+    bool hasGrabbedSet;
+
     #endregion
     private int isWithinHand(GameObject checkObject)
     {
@@ -163,6 +170,7 @@ public class handController : MonoBehaviour
         grabbedPhysics.useGravity = true;
     }
     #endregion
+
     // Punches in front of the player
     public void punchCommand(Vector2 angle)
     {
@@ -194,10 +202,35 @@ public class handController : MonoBehaviour
             givenButton.pressButton();
         }
     }
+
+    public override void rewindObject()
+    {
+        base.rewindObject();
+        if (hasGrabbed)
+        {
+            throwObject(0, Vector2.zero);
+            grabbedObject.layer = originalLayer;
+        }
+        grabTimeLeft = grabTimeLeftSet;
+        punchTimeLeft = punchTimeLeftSet;
+        punchCooldownTimeLeft = punchCooldownTimeLeftSet;
+        hasGrabbed = hasGrabbedSet;
+    }
+
+    public override void setObject()
+    {
+        base.setObject();
+        grabTimeLeftSet = grabTimeLeft;
+        punchTimeLeftSet = punchTimeLeft;
+        punchCooldownTimeLeftSet = punchCooldownTimeLeft;
+        hasGrabbedSet = hasGrabbed;
+    }
+
     void Start()
     {
         getAngle = Camera.main.GetComponent<playerCam>();
     }
+
     // Update is called once per frame
     void Update()
     {

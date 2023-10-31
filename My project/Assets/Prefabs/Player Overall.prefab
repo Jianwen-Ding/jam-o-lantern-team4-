@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8303302131624169403}
   - component: {fileID: 6097013841333574332}
   - component: {fileID: 2471336570923888225}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Hand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -83,6 +83,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 901525e7333eb4896b0a7aac85ae153b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  originalPos: {x: 0, y: 0, z: 0}
+  originalEulerRot: {x: 0, y: 0, z: 0}
   hasGrabCommand: 0
   hasThrownCommand: 0
   hasPunchCommand: 0
@@ -143,10 +145,10 @@ GameObject:
   - component: {fileID: 137785731479906372}
   - component: {fileID: 4759389745822144718}
   - component: {fileID: 2802035439777640690}
-  - component: {fileID: 6617241427854836312}
   - component: {fileID: 7834253957949077234}
   - component: {fileID: 7005115593346707064}
   - component: {fileID: 6704698298292934113}
+  - component: {fileID: 342784172107787066}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -163,8 +165,8 @@ Transform:
   m_GameObject: {fileID: 7220854888992087961}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.9038854, y: -5.3683205, z: -7.265964}
-  m_LocalScale: {x: 1, y: 2, z: 1}
+  m_LocalPosition: {x: -3.648, y: -5.278, z: 15.25}
+  m_LocalScale: {x: 1, y: 1.06, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3054637047010052655}
@@ -176,7 +178,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7220854888992087961}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &2802035439777640690
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -197,7 +199,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: aadd5a709a48466c887296bb5b1b8110, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -219,27 +221,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &6617241427854836312
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7220854888992087961}
-  m_Material: {fileID: 13400000, guid: bfd73d33c9f7440d691734d341a087d1, type: 2}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &7834253957949077234
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -279,19 +260,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d527e21532c4341f884314b3b6aef3fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startFadeOut: 0.5
   cameraHolder: {fileID: 0}
   getCam: {fileID: 0}
   objectPhysics: {fileID: 0}
   stateRecorder: {fileID: 0}
   handScript: {fileID: 2471336570923888225}
-  hasTouchedPoint: 0
+  rewindBlackOut: 3
   groundSpeed: 6
   airSpeed: 100
   midairReversalRatio: 3
   jumpVel: 7.5
   hasJumped: 0
   midAir: 0
-  distanceHorPerCheck: 0.705
+  distanceHorPerCheck: 0.45
   distanceVerPerCheck: 1.1
 --- !u!114 &6704698298292934113
 MonoBehaviour:
@@ -306,3 +288,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   getHand: {fileID: 2471336570923888225}
+--- !u!136 &342784172107787066
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7220854888992087961}
+  m_Material: {fileID: 13400000, guid: bfd73d33c9f7440d691734d341a087d1, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}

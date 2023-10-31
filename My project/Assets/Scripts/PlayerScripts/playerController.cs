@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class playerController : MonoBehaviour
 {
+    [SerializeField]
+    float startFadeOut;
     //Cache
     [SerializeField]
     GameObject cameraHolder;
@@ -16,12 +18,13 @@ public class playerController : MonoBehaviour
     [SerializeField]
     handController handScript;
     //Rewind
-    [SerializeField]
     bool hasTouchedPoint = false;
     rewindPoint checkPoint;
     bool hasRewinded;
     bool hasCloned;
     bool hasCancel;
+    [SerializeField]
+    float rewindBlackOut;
     //Movement
     [SerializeField]
     float groundSpeed;
@@ -46,6 +49,7 @@ public class playerController : MonoBehaviour
         getCam = Camera.main.GetComponent<playerCam>();
         objectPhysics = gameObject.GetComponent<Rigidbody>();
         stateRecorder = gameObject.GetComponent<stateCapture>();
+        fadeInFadeOut.fadeOut(startFadeOut);
     }
 
     // disconnects with last point and connects to a new rewind point
@@ -71,11 +75,12 @@ public class playerController : MonoBehaviour
         gameObject.transform.position = checkPoint.gameObject.transform.position;
         objectPhysics.velocity = Vector3.zero;
         stateRecorder.stateStore.clearStates();
+        fadeInFadeOut.fadeOut(rewindBlackOut);
     }
     // sends raycasts below the character to check if there is a collider below
     private bool checkBeneath()
     {
-        int layerMask = ~(1 << 6);
+        int layerMask = ~((1 << 6) | (1<< 8));
         bool centerCheck = Physics.Raycast(gameObject.transform.position, Vector3.down, distanceVerPerCheck, layerMask);
         debugRay.createRay(gameObject.transform.position, Vector3.down, distanceVerPerCheck, layerMask);
         float initialAngle = -gameObject.transform.eulerAngles.y;
@@ -87,16 +92,23 @@ public class playerController : MonoBehaviour
             //debugValueSys.display("" + angle, "" + usedAngle);  
             return Physics.Raycast(gameObject.transform.position + aug, Vector3.down, distanceVerPerCheck, layerMask);
         }
+
+        bool topCheck = checkAtAngle(0f);
         bool leftTopCheck = checkAtAngle(45f);
+        bool leftCheck = checkAtAngle(90f);
         bool rightTopCheck = checkAtAngle(-45f);
+        bool rightCheck = checkAtAngle(-90f);
         bool leftBackCheck = checkAtAngle(135f);
         bool rightBackCheck = checkAtAngle(-135f);
-        return (centerCheck || leftTopCheck || rightTopCheck || leftBackCheck || rightBackCheck);
-    }
+        bool backCheck = checkAtAngle(180f);
+
+        return (centerCheck || leftTopCheck || rightTopCheck || leftBackCheck || rightBackCheck || topCheck || leftCheck || rightCheck || backCheck);
+    } 
 
     // checks whether the player is midair or not for jumping and midair movement
     private void OnCollisionExit(Collision collision)
     {
+        print("wow");   
         midAir = true;
     }
     private void OnCollisionEnter(Collision collision)
@@ -132,6 +144,7 @@ public class playerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        checkBeneath(); 
         cameraHolder.transform.position = gameObject.transform.position;
         transform.rotation = Quaternion.Euler(0, getCam.yAngle, 0);
         float verInput = Input.GetAxisRaw("Verticle");

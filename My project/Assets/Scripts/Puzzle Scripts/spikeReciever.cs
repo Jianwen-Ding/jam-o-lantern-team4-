@@ -7,15 +7,15 @@ public class spikeReciever : rewindBase
 {
     Collider cacheCollider;
     [SerializeField]
-    bool reverse;
+    bool baseTrigger;
     bool originalTrigger;
     public void activate()
     {
-        cacheCollider.isTrigger = !reverse;
+        cacheCollider.isTrigger = baseTrigger;
     }
     public void deactivate()
     {
-        cacheCollider.isTrigger = reverse;
+        cacheCollider.isTrigger = !baseTrigger;
     }
     // rewind and set
     public override void rewindObject()
@@ -30,11 +30,11 @@ public class spikeReciever : rewindBase
         base.setObject();
         originalTrigger = cacheCollider.isTrigger;
     }
+
     private void Start()
     {
-
         cacheCollider = gameObject.GetComponent<Collider>();
-        cacheCollider.isTrigger = reverse;
+        cacheCollider.isTrigger = baseTrigger;
     }
 
     private void OnCollisionEnter(Collision collision)
