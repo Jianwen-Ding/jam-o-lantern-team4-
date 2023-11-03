@@ -124,6 +124,6 @@ MonoBehaviour:
   isTimed: 0
   isToggle: 0
   timeUntilDeactivate: 0
-  defaultMat: {fileID: 2100000, guid: f40a4658c93d34f2d861dd45c8c64c72, type: 2}
+  defaultMat: {fileID: 2100000, guid: cba28ad0eed4d4b3f8f6675acca7e2af, type: 2}
   activatedMat: {fileID: 2100000, guid: 85972faaad9e2449d93eec54686ba2e2, type: 2}
   renderPlate: {fileID: 0}
