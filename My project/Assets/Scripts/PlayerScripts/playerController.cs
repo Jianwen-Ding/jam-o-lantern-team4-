@@ -109,7 +109,6 @@ public class playerController : MonoBehaviour
     // checks whether the player is midair or not for jumping and midair movement
     private void OnCollisionExit(Collision collision)
     {
-        print("wow");   
         midAir = true;
     }
     private void OnCollisionEnter(Collision collision)

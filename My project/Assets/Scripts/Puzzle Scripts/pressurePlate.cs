@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class pressurePlate : buttonScript
 {
+    [SerializeField]
+    Material defaultMat;
+    [SerializeField]
+    Material activatedMat;
+    [SerializeField]
+    MeshRenderer renderPlate;
     List<GameObject> withinHand = new List<GameObject>();
     private int isWithinHand(GameObject checkObject)
     {
@@ -69,4 +75,21 @@ public class pressurePlate : buttonScript
         }
     }
 
+    private void Start()
+    {
+        renderPlate = gameObject.GetComponent<MeshRenderer>();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        if (isActivated)
+        {
+            renderPlate.material = activatedMat;
+        }
+        else
+        {
+            renderPlate.material = defaultMat;
+        }
+    }
 }

@@ -8,6 +8,18 @@ public class handController : rewindBase
     playerCam getAngle;
     List<GameObject> withinHand = new List<GameObject>();
 
+    //Clone Vars
+    [SerializeField]
+    inputFeeder getInputs;
+    [SerializeField]
+    Material defaultMat;
+    [SerializeField]
+    Material grabMat;
+    [SerializeField]
+    Material punchMat;
+    [SerializeField]
+    MeshRenderer renderGet;
+
     //Player controllers
     public bool hasGrabCommand = false;
     public bool hasThrownCommand = false;
@@ -48,6 +60,7 @@ public class handController : rewindBase
     //Punch Vars
     [SerializeField]
     float punchTime;
+    [SerializeField]
     float punchTimeLeft;
     [SerializeField]
     float punchCooldownTime;
@@ -113,6 +126,7 @@ public class handController : rewindBase
         else
         {
             grabTimeLeft = grabTime;
+            punchCooldownTimeLeft = 0;
         }
     }
 
@@ -177,12 +191,13 @@ public class handController : rewindBase
         if (!hasGrabbed && grabTimeLeft <= 0)
         {
             checkPunch(angle);
+            grabTimeLeft = 0;
+            punchCooldownTimeLeft = punchCooldownTime;
+            punchTimeLeft = punchTime;
         }
     }
     private void checkPunch(Vector2 angle)
     {
-        grabTimeLeft = 0;
-        punchCooldownTimeLeft = punchCooldownTime;
         for (int i = 0; i < withinHand.Count; i++)
         {
             punchObject(withinHand[i], angle);
@@ -194,11 +209,13 @@ public class handController : rewindBase
         pushButton givenButton = givenObject.GetComponent<pushButton>();
         if (givenPhysics != null)
         {
+            punchTimeLeft = 0;
             Vector3 pushDir = mathHelper.getVectorFromAngle(punchStrength, angle);
             givenPhysics.AddForce(pushDir, ForceMode.Impulse);
         }
         if(givenButton != null)
         {
+            punchTimeLeft = 0;
             givenButton.pressButton();
         }
     }
@@ -229,6 +246,10 @@ public class handController : rewindBase
     void Start()
     {
         getAngle = Camera.main.GetComponent<playerCam>();
+        if (!isBeingControlledByPlayer)
+        {
+            renderGet = gameObject.GetComponent<MeshRenderer>();
+        }
     }
 
     // Update is called once per frame
@@ -294,6 +315,10 @@ public class handController : rewindBase
         // Grab lingering hitbox
         if(grabTimeLeft > 0)
         {
+            if (!isBeingControlledByPlayer)
+            {
+                renderGet.material = grabMat;
+            }
             grabTimeLeft -= Time.deltaTime;
             if (attemptGrab())
             {
@@ -301,17 +326,35 @@ public class handController : rewindBase
             }
         }
 
-        // Punch cooldown
-        if(punchCooldownTimeLeft > 0)
+        // Punch lingering hitbox
+        else if (punchTimeLeft > 0)
         {
-            punchCooldownTimeLeft -= Time.deltaTime;
+            if (!isBeingControlledByPlayer)
+            {
+                renderGet.material = punchMat;
+            }
+            punchTimeLeft = punchTimeLeft - Time.deltaTime;
+            if (isBeingControlledByPlayer)
+            {
+                checkPunch(getAngle.getAngleVec());
+            }
+            else
+            {
+                checkPunch(getInputs.angle);
+            }
         }
 
-        // Punch lingering hitbox
-        if(punchTimeLeft > 0)
+        else
         {
-            punchTimeLeft -= Time.deltaTime;
-            checkPunch(getAngle.getAngleVec());
+            if (!isBeingControlledByPlayer)
+            {
+                renderGet.material = defaultMat;
+            }
+        }
+        // Punch cooldown
+        if (punchCooldownTimeLeft > 0)
+        {
+            punchCooldownTimeLeft -= Time.deltaTime;
         }
 
         // Grab 

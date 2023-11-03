@@ -1735,6 +1735,9 @@ MonoBehaviour:
   isTimed: 0
   isToggle: 0
   timeUntilDeactivate: 0
+  defaultMat: {fileID: 0}
+  activatedMat: {fileID: 0}
+  renderPlate: {fileID: 0}
 --- !u!1001 &4998335387454859655
 PrefabInstance:
   m_ObjectHideFlags: 0

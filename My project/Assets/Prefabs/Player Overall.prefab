@@ -85,13 +85,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   originalPos: {x: 0, y: 0, z: 0}
   originalEulerRot: {x: 0, y: 0, z: 0}
+  defaultMat: {fileID: 0}
+  grabMat: {fileID: 0}
+  punchMat: {fileID: 0}
+  renderGet: {fileID: 0}
   hasGrabCommand: 0
   hasThrownCommand: 0
   hasPunchCommand: 0
   isBeingControlledByPlayer: 1
   player: {fileID: 7220854888992087961}
   stateCapturer: {fileID: 0}
-  grabTime: 3
+  grabTime: 1.5
   letGoStrength: 1
   reversalSpeedUp: 8
   adjustForce: 5400
@@ -268,9 +272,9 @@ MonoBehaviour:
   handScript: {fileID: 2471336570923888225}
   rewindBlackOut: 3
   groundSpeed: 6
-  airSpeed: 100
-  midairReversalRatio: 3
-  jumpVel: 7.5
+  airSpeed: 150
+  midairReversalRatio: 5
+  jumpVel: 8
   hasJumped: 0
   midAir: 0
   distanceHorPerCheck: 0.45

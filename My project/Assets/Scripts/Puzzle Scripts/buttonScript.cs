@@ -63,7 +63,7 @@ public class buttonScript : rewindBase
     }
 
     // Update is called once per frame
-    void Update()
+    public virtual void Update()
     {
         if (isTimed)
         {

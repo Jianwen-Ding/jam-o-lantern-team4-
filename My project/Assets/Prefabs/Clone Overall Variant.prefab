@@ -25,6 +25,22 @@ PrefabInstance:
       value: Clone Hand
       objectReference: {fileID: 0}
     - target: {fileID: 2471336570923888225, guid: 435ecf78e45614e0981b9e5ebcd87410, type: 3}
+      propertyPath: grabMat
+      value: 
+      objectReference: {fileID: 2100000, guid: 85972faaad9e2449d93eec54686ba2e2, type: 2}
+    - target: {fileID: 2471336570923888225, guid: 435ecf78e45614e0981b9e5ebcd87410, type: 3}
+      propertyPath: punchMat
+      value: 
+      objectReference: {fileID: 2100000, guid: cba28ad0eed4d4b3f8f6675acca7e2af, type: 2}
+    - target: {fileID: 2471336570923888225, guid: 435ecf78e45614e0981b9e5ebcd87410, type: 3}
+      propertyPath: getInputs
+      value: 
+      objectReference: {fileID: 5785519166407995914}
+    - target: {fileID: 2471336570923888225, guid: 435ecf78e45614e0981b9e5ebcd87410, type: 3}
+      propertyPath: defaultMat
+      value: 
+      objectReference: {fileID: 2100000, guid: f40a4658c93d34f2d861dd45c8c64c72, type: 2}
+    - target: {fileID: 2471336570923888225, guid: 435ecf78e45614e0981b9e5ebcd87410, type: 3}
       propertyPath: isBeingControlledByPlayer
       value: 0
       objectReference: {fileID: 0}
@@ -146,7 +162,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d54864c37923c429abe1ed218cefbdb8, type: 2}
+  - {fileID: 2100000, guid: f40a4658c93d34f2d861dd45c8c64c72, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -186,3 +202,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerHand: {fileID: 1699259931332976894}
+  angle: {x: 0, y: 0}

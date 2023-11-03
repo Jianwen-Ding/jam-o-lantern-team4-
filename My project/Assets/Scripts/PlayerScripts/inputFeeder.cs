@@ -10,7 +10,7 @@ public class inputFeeder : MonoBehaviour
     GameObject playerHand;
     handMover mover;
     handController handControl;
-
+    public Vector2 angle;
     //Feeds these states into a clone
     public stateCapture.StatePlaythroughCaptured stateRecording = new stateCapture.StatePlaythroughCaptured();
 
@@ -28,6 +28,7 @@ public class inputFeeder : MonoBehaviour
             stateCapture.StateFrameCaptured framesCaptured = stateRecording.chopInputList(Time.deltaTime);
             gameObject.transform.position = framesCaptured.objectPosition;
             gameObject.transform.rotation = Quaternion.Euler(0, framesCaptured.angleView.y, 0);
+            angle = framesCaptured.angleView;
             mover.givenAngle = framesCaptured.angleView;
             if (framesCaptured.grabCommand)
             {
